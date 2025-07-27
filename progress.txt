@@ -1,0 +1,80 @@
+package com.example.myapplication;
+
+import android.app.AlertDialog;
+import android.os.Bundle;
+import android.os.Handler;
+import android.widget.Button;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+
+
+import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
+public class MainActivity extends AppCompatActivity {
+    private int progress = 0;
+    private boolean isPaused = true;
+    private Handler handler = new Handler();
+    private Runnable progressRunnable;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_main);
+        Button startbtn = findViewById(R.id.startbtn);
+        Button pausebtn = findViewById(R.id.pausebtn);
+        Button resetbtn = findViewById(R.id.resetbtn);
+        ProgressBar progrssbar = findViewById(R.id.progressbar);
+        TextView progresstext = findViewById(R.id.progresstext);
+
+        progrssbar.setMax(100);
+
+        progressRunnable = new Runnable() {
+            @Override
+            public void run() {
+                if(!isPaused && progress<100){
+                    progress++;
+                    progrssbar.setProgress(progress);
+                    progresstext.setText("Progress"+progress+"%");
+                    if (progress==100){
+                        new AlertDialog.Builder(MainActivity.this)
+                                .setTitle("Progrss complete")
+                                .setMessage("The process reached 100%")
+                                .setPositiveButton("OK",null)
+                                .show();
+                    }else{
+                        handler.postDelayed(this,200);
+                    }
+                }
+            }
+        };
+
+        startbtn.setOnClickListener(v -> {
+            if (progress<100){
+                isPaused=false;
+                handler.post(progressRunnable);
+            }
+        });
+
+        pausebtn.setOnClickListener(v -> {
+            isPaused = true;
+        });
+
+        resetbtn.setOnClickListener(v -> {
+            isPaused = true;
+            progress = 0;
+            progrssbar.setProgress(progress);
+            progresstext.setText("0%");
+        });
+
+
+
+
+
+
+    }
+}
