@@ -1,0 +1,138 @@
+<?php
+// --- DB Connection ---
+$host = "localhost";
+$user = "your_db_user";
+$password = "your_db_password";
+$dbname = "your_db_name";
+
+$conn = new mysqli($host, $user, $password, $dbname);
+if ($conn->connect_error) die("Connection failed: " . $conn->connect_error);
+
+// --- Create Table If Not Exists ---
+$conn->query("CREATE TABLE IF NOT EXISTS users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(255),
+    email VARCHAR(255)
+)");
+
+// --- Insert ---
+if (isset($_POST['create'])) {
+    $username = $_POST['username'];
+    $email = $_POST['email'];
+    $stmt = $conn->prepare("INSERT INTO users (username, email) VALUES (?, ?)");
+    $stmt->bind_param("ss", $username, $email);
+    $stmt->execute();
+    $stmt->close();
+}
+
+// --- Update ---
+if (isset($_POST['update'])) {
+    $id = $_POST['id'];
+    $username = $_POST['username'];
+    $email = $_POST['email'];
+    $stmt = $conn->prepare("UPDATE users SET username=?, email=? WHERE id=?");
+    $stmt->bind_param("ssi", $username, $email, $id);
+    $stmt->execute();
+    $stmt->close();
+}
+
+// --- Delete ---
+if (isset($_POST['delete'])) {
+    $id = $_POST['id'];
+    $stmt = $conn->prepare("DELETE FROM users WHERE id=?");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $stmt->close();
+}
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Management</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f7f7f9;
+            margin: 2em;
+        }
+        h2 {
+            color: #3a3a3c;
+        }
+        form {
+            margin-bottom: 2em;
+            background: #fff;
+            padding: 1em;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            display: flex;
+            gap: 1em;
+            flex-wrap: wrap;
+        }
+        input, button {
+            padding: 0.5em;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+        button {
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+        }
+        button[name="update"] {
+            background-color: #2196F3;
+        }
+        button[name="delete"] {
+            background-color: #f44336;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
+        th, td {
+            padding: 0.75em;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Create or Update User</h2>
+<form method="POST">
+    <input type="hidden" name="id" value="">
+    <input type="text" name="username" placeholder="Username" required>
+    <input type="email" name="email" placeholder="Email" required>
+    <button type="submit" name="create">Create</button>
+    <button type="submit" name="update">Update</button>
+</form>
+
+<h2>Users List</h2>
+<table>
+    <tr><th>ID</th><th>Username</th><th>Email</th><th>Actions</th></tr>
+    <?php
+    $result = $conn->query("SELECT * FROM users");
+    while ($row = $result->fetch_assoc()) {
+        echo "<tr>
+            <form method='POST'>
+                <td>{$row['id']}<input type='hidden' name='id' value='{$row['id']}'></td>
+                <td><input name='username' value='{$row['username']}'></td>
+                <td><input name='email' value='{$row['email']}'></td>
+                <td>
+                    <button name='update'>Update</button>
+                    <button name='delete' onclick='return confirm(\"Delete user #{$row['id']}?\")'>Delete</button>
+                </td>
+            </form>
+        </tr>";
+    }
+    ?>
+</table>
+</body>
+</html>

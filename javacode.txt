@@ -1,0 +1,116 @@
+sudo apt update && sudo apt upgrade -y
+
+sudo apt install wget -y
+wget https://download.oracle.com/java/17/latest/jdk-17_linux-x64_bin.deb
+sudo apt install ./jdk-17_linux-x64_bin.deb
+
+sudo apt install openjdk-17-jdk -y
+
+java -version
+javac -version
+
+javac -cp .:mysql-connector-java-8.0.xx.jar RdsCrudApp.java
+java -cp .:mysql-connector-java-8.0.xx.jar RdsCrudApp
+
+
+
+import java.sql.*;
+import java.util.*;
+
+public class RdsCrudApp {
+    static Scanner sc = new Scanner(System.in);
+    static Connection conn;
+
+    public static void main(String[] args) {
+        try {
+            conn = DriverManager.getConnection(
+                "jdbc:mysql://<RDS-ENDPOINT>:3306/<DB-NAME>",
+                "<DB-USERNAME>", "<DB-PASSWORD>"
+            );
+            createTableIfNotExists();
+
+            while (true) {
+                System.out.println("\n--- RDS User Management ---");
+                System.out.println("1. Create User");
+                System.out.println("2. Read Users");
+                System.out.println("3. Update User");
+                System.out.println("4. Delete User");
+                System.out.println("5. Exit");
+                System.out.print("Choose: ");
+                int choice = sc.nextInt();
+                sc.nextLine();
+
+                switch (choice) {
+                    case 1 -> createUser();
+                    case 2 -> readUsers();
+                    case 3 -> updateUser();
+                    case 4 -> deleteUser();
+                    case 5 -> {
+                        conn.close();
+                        System.exit(0);
+                    }
+                    default -> System.out.println("Invalid choice.");
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    static void createTableIfNotExists() throws SQLException {
+        String sql = "CREATE TABLE IF NOT EXISTS users (" +
+                     "id INT AUTO_INCREMENT PRIMARY KEY, " +
+                     "name VARCHAR(100), email VARCHAR(100))";
+        conn.createStatement().execute(sql);
+    }
+
+    static void createUser() throws SQLException {
+        System.out.print("Name: ");
+        String name = sc.nextLine();
+        System.out.print("Email: ");
+        String email = sc.nextLine();
+
+        PreparedStatement ps = conn.prepareStatement(
+            "INSERT INTO users (name, email) VALUES (?, ?)"
+        );
+        ps.setString(1, name);
+        ps.setString(2, email);
+        ps.executeUpdate();
+        System.out.println("User created.");
+    }
+
+    static void readUsers() throws SQLException {
+        ResultSet rs = conn.createStatement().executeQuery("SELECT * FROM users");
+        while (rs.next()) {
+            System.out.printf("%d: %s (%s)\n", rs.getInt("id"), rs.getString("name"), rs.getString("email"));
+        }
+    }
+
+    static void updateUser() throws SQLException {
+        System.out.print("User ID to update: ");
+        int id = sc.nextInt(); sc.nextLine();
+        System.out.print("New name: ");
+        String name = sc.nextLine();
+        System.out.print("New email: ");
+        String email = sc.nextLine();
+
+        PreparedStatement ps = conn.prepareStatement(
+            "UPDATE users SET name=?, email=? WHERE id=?"
+        );
+        ps.setString(1, name);
+        ps.setString(2, email);
+        ps.setInt(3, id);
+        int rows = ps.executeUpdate();
+        System.out.println(rows > 0 ? "User updated." : "User not found.");
+    }
+
+    static void deleteUser() throws SQLException {
+        System.out.print("User ID to delete: ");
+        int id = sc.nextInt(); sc.nextLine();
+
+        PreparedStatement ps = conn.prepareStatement("DELETE FROM users WHERE id=?");
+        ps.setInt(1, id);
+        int rows = ps.executeUpdate();
+        System.out.println(rows > 0 ? "User deleted." : "User not found.");
+    }
+}
