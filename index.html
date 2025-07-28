@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Anantha's Portfolio</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+    body { background: #f9f9f9; color: #333; line-height: 1.6; }
+    header, section { padding: 60px 20px; max-width: 900px; margin: auto; }
+    nav { background: #333; color: #fff; padding: 10px 20px; position: sticky; top: 0; z-index: 1000; }
+    nav ul { display: flex; justify-content: space-around; list-style: none; }
+    nav a { color: #fff; text-decoration: none; font-weight: bold; }
+
+    .hero { text-align: center; padding-top: 100px; }
+    .hero h1 { font-size: 3em; color: #222; }
+    .hero p { font-size: 1.2em; color: #666; }
+
+    section h2 { margin-bottom: 20px; font-size: 2em; border-bottom: 2px solid #eee; }
+    .skills ul, .projects ul { list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; }
+    .skills li, .projects li { background: #fff; border: 1px solid #ddd; padding: 10px; border-radius: 8px; text-align: center; }
+
+    .contact form { display: flex; flex-direction: column; gap: 10px; }
+    .contact input, .contact textarea { padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
+    .contact button { background: #333; color: #fff; border: none; padding: 10px; border-radius: 5px; cursor: pointer; }
+
+    footer { text-align: center; padding: 20px; background: #eee; margin-top: 40px; }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <ul>
+      <li><a href="#hero">Home</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <section class="hero" id="hero">
+    <h1>Hello, I'm Anantha 👋</h1>
+    <p>Backend engineer | Architecting secure systems | LLM Enthusiast</p>
+  </section>
+
+  <section id="about">
+    <h2>About Me</h2>
+    <p>I’m passionate about building secure, scalable SaaS platforms with real-world impact. Currently exploring LLMs in healthcare accessibility and modular data architectures.</p>
+  </section>
+
+  <section class="skills" id="skills">
+    <h2>Skills</h2>
+    <ul>
+      <li>Node.js</li>
+      <li>Supabase</li>
+      <li>PostgreSQL</li>
+      <li>RLS & Policies</li>
+      <li>Secure APIs</li>
+      <li>LLM Design</li>
+    </ul>
+  </section>
+
+  <section class="projects" id="projects">
+    <h2>Projects</h2>
+    <ul>
+      <li>Ad Persona Analyzer</li>
+      <li>Secure Healthcare Platform</li>
+      <li>Modular Flutter Notes App</li>
+      <li>Gov Scheme Navigator</li>
+    </ul>
+  </section>
+
+  <section class="contact" id="contact">
+    <h2>Contact Me</h2>
+    <form>
+      <input type="text" placeholder="Your name" required />
+      <input type="email" placeholder="Your email" required />
+      <textarea rows="5" placeholder="Your message"></textarea>
+      <button type="submit">Send</button>
+    </form>
+  </section>
+
+  <footer>
+    <p>© 2025 Anantha. All rights reserved.</p>
+  </footer>
+
+</body>
+</html>
